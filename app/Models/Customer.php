@@ -9,9 +9,14 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $table = 'customers';
     
-    protected $fillable = [
-        'username',
-        'nomor_hp'
-    ];
+    // Kolom yang boleh diisi massal
+    protected $fillable = ['username', 'nomor_hp', 'alamat'];
+
+    // Relasi: Satu customer bisa punya banyak orderan
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'id_pelanggan', 'id');
+    }
 }

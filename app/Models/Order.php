@@ -9,17 +9,18 @@ class Order extends Model
 {
     use HasFactory;
 
-    
-   protected $fillable = [
-    'nama_pelanggan', 
-    'nomor_hp', 
-    'alamat', 
-    'kategori_pesanan', 
-    'jenis_satuan', 
-    'tipe_paket', 
-    'berat', 
-    'layanan', 
-    'total_harga', 
-    'status'
-];
+    protected $table = 'orders';
+    protected $fillable = ['id_pelanggan', 'id_services', 'jenis_satuan', 'berat', 'total_harga', 'status'];
+
+    // Relasi: Orderan ini milik siapa?
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'id_pelanggan', 'id');
+    }
+
+    // Relasi: Orderan ini pakai layanan apa?
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'id_services', 'id');
+    }
 }

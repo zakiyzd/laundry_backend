@@ -9,6 +9,8 @@ use App\Http\Controllers\ExpenseController;
 Route::post('/login', [AuthController::class, 'login']);
 // --- REGISTER ADMIN/OWNER (TAMBAH AKUN BARU) ---
 Route::post('/register', [AuthController::class, 'register']);
+// --- CEK STATUS CUSTOMER
+Route::post('/orders/check-status', [OrderController::class, 'checkStatusCustomer']);
 
 // --- ORDERS (ADMIN & CUSTOMER) ---
 Route::get('/orders', [OrderController::class, 'index']);
