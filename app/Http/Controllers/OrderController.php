@@ -85,14 +85,17 @@ public function checkStatusCustomer(Request $request)
         $order->load(['customer', 'service.kategori']);
 
         // --- 1. PESAN NOTIFIKASI WA: ORDER BARU ---
-        $pesanOrderBaru = "Halo *" . $customer->username . "*, 👋😊\n" .
-                          "Terima kasih sudah laundry di sini. Pesanan Anda telah diterima:\n\n" .
-                          "📄 *ID:* #00" . $order->id . "\n" .
-                          "🧺 *Layanan:* " . $namaLayananTxt . "\n" .
-                          "⚖️ *Berat:* " . $order->berat . " Kg\n" .
-                          "💰 *Harga:* Rp " . number_format($order->total_harga, 0, ',', '.') . "\n" .
-                          "📌 *Status:* " . ucfirst($order->status) . "\n\n" .
-                          "Mohon tunggu notifikasi selanjutnya saat cucian diproses. Terima kasih! 🙏";
+      $pesanOrderBaru = "Halo *" . $customer->username . "*, 👋😊\n" .
+                  "Terima kasih sudah laundry di sini. Pesanan Anda telah diterima:\n\n" .
+                  "📄 *ID:* #" . str_pad($order->id, 4, '0', STR_PAD_LEFT) . "\n" .
+                  "🧺 *Layanan:* " . $namaLayananTxt . "\n" .
+                  "⚖️ *Berat:* " . ($order->berat > 0 ? $order->berat . " Kg" : "Satuan (" . ($order->jenis_satuan ?? '-') . ")") . "\n" .
+                  "💰 *Harga:* Rp " . number_format($order->total_harga, 0, ',', '.') . "\n" .
+                  "📌 *Status:* " . ucfirst($order->status) . "\n\n" .
+                  "Mohon tunggu notifikasi selanjutnya saat cucian diproses. Terima kasih! 🙏\n\n" .
+                  "----------------------------------------------\n" .
+                  "*Pantau status cucian Anda melalui Aplikasi Mobile. Unduh sekarang di sini:*\n" .
+                  "👉 https://bit.ly/DownloadAppLaundryZaki"; // Silakan ganti dengan link Google Drive / MediaFire kamu
 
         $this->kirimNotifikasiWA($customer->nomor_hp, $pesanOrderBaru);
         // --- END NOTIFIKASI ORDER BARU ---
@@ -137,16 +140,16 @@ public function checkStatusCustomer(Request $request)
                 
                 // 2. STATUS: DIPROSES
                 if ($order->status === 'diproses' || $order->status === 'proses') {
-                    $pesanProses = "Halo *" . $namaPelanggan . "*, 👋\n" .
-                                   "Menginfokan bahwa cucian Anda dengan *ID Pesanan #00" . $order->id . "* **sedang dalam proses** pengerjaan. 🧺🧼";
+                    $pesanProses = "Halo *" . $namaPelanggan . "*,\n" .
+                                   "Cucian Anda dengan *ID Pesanan #00" . $order->id . "* **Sedang Dalam Proses** pengerjaan.";
                     
                     $this->kirimNotifikasiWA($nomorHpPelanggan, $pesanProses);
                 } 
                 
                 // 3. STATUS: SELESAI
                 else if ($order->status === 'selesai') {
-                    $pesanSelesai = "Halo *" . $namaPelanggan . "*, 🧺✨\n" .
-                                    "Cucian Anda dengan *ID Pesanan #00" . $order->id . "* **telah selesai dan siap diambil**.\n\n" .
+                    $pesanSelesai = "Halo *" . $namaPelanggan . "*,\n" .
+                                    "Cucian Anda dengan *ID Pesanan #00" . $order->id . "* **Telah Selesai dan Siap Diambil**.\n\n" .
                                     "💵 *Total Tagihan:* Rp " . number_format($order->total_harga, 0, ',', '.') . "\n\n" .
                                     "Silakan melakukan pengambilan ke toko ya. Terima kasih! 😊";
                     
@@ -154,9 +157,11 @@ public function checkStatusCustomer(Request $request)
                 } 
                 
                 // 4. STATUS: DIAMBIL
-                else if ($order->status === 'diambil') {
-                    $pesanDiambil = "Halo *" . $namaPelanggan . "*, 🙏😊\n" .
-                                    "Pesanan *ID #00" . $order->id . "* **telah sukses diambil dan dinyatakan lunas**. Terima kasih banyak atas kepercayaan Anda pada laundry kami! 👕🌸";
+               else if ($order->status === 'diambil') {
+                     $pesanDiambil = "Halo *" . $namaPelanggan . "*, \n" .
+                    "Pesanan *ID #" . str_pad($order->id, 4, '0', STR_PAD_LEFT) . "* **Telah Sukses Diambil dan Dinyatakan Lunas**.\n\n" .
+                    "Terima kasih atas kepercayaan Anda pada MM Laundry😊";
+
                     
                     $this->kirimNotifikasiWA($nomorHpPelanggan, $pesanDiambil);
                 }
